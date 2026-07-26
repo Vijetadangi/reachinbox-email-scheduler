@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:worker": "node dist/worker-server.js",
     "worker": "ts-node-dev --respawn --transpile-only src/worker.ts",
     "worker:prod": "node dist/worker.js",
     "migrate": "node -r ts-node/register src/db/migrate.ts",
