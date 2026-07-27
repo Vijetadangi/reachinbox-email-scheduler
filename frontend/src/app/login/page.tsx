@@ -4,14 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Zap, Shield, BarChart3 } from 'lucide-react';
+import { loginWithGoogleToken } from '@/lib/api';
+import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export default function LoginPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -34,6 +37,21 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/api/auth/google`;
+  };
+
+  const handleDemoLogin = async () => {
+    setDemoLoading(true);
+    setError(null);
+    try {
+      const res = await axios.post(`${API_URL}/api/demo/demo-login`);
+      const { token, user } = res.data;
+      login(token, user);
+      router.replace('/dashboard');
+    } catch {
+      setError('Demo login failed. Make sure the backend is running.');
+    } finally {
+      setDemoLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -122,10 +140,33 @@ export default function LoginPage() {
             Continue with Google
           </button>
 
+          {/* Demo login — dev only */}
+          <div className="mt-3 relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-[#0d1117] px-3 text-white/30">or</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDemoLogin}
+            disabled={demoLoading}
+            className="w-full flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 font-medium py-3 px-6 rounded-xl transition-colors duration-200 disabled:opacity-50 mt-3"
+          >
+            {demoLoading ? (
+              <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <span>⚡</span>
+            )}
+            {demoLoading ? 'Signing in...' : 'Demo Login (no Google needed)'}
+          </button>
+
           <p className="mt-6 text-center text-white/30 text-xs">
-            By continuing, you agree to our terms of service.
-            <br />
             Emails are sent via Ethereal (fake SMTP — nothing is actually delivered).
+            <br />
+            Demo login is for local testing only.
           </p>
         </div>
       </div>

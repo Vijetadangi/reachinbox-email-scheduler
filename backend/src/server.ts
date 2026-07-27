@@ -8,6 +8,7 @@ import { getEmailQueue } from './queues/emailQueue';
 import authRouter from './routes/auth';
 import emailsRouter from './routes/emails';
 import sendersRouter from './routes/senders';
+import demoRouter from './routes/demo';
 import { errorHandler } from './middleware/errorHandler';
 import { getDefaultTransporter } from './services/ethereal';
 
@@ -51,6 +52,7 @@ app.get('/health', async (_req, res) => {
 
 // Routes
 app.use('/api/auth', authRouter);
+app.use('/api/demo', demoRouter);
 app.use('/api/emails', emailsRouter);
 app.use('/api/senders', sendersRouter);
 
