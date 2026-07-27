@@ -145,7 +145,6 @@ async function bootstrap(): Promise<void> {
     logger.error('PostgreSQL connection failed:', err);
     process.exit(1);
   }
-
   // Verify Redis connection
   try {
     const redis = getRedisClient();
